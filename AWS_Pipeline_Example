@@ -1,0 +1,118 @@
+{
+  "objects": [
+    {
+      "schedule": {
+        "ref": "DefaultSchedule"
+      },
+      "directoryPath": "s3://inrixprod-pit/data/provider=autoguard/data/year=2016/month=03/day=01",
+      "dataFormat": {
+        "ref": "DataFormatId_E4oC9"
+      },
+      "name": "MyInputData",
+      "id": "S3DataNodeId_qU2Oi",
+      "type": "S3DataNode"
+    },
+    {
+      "output": {
+        "ref": "S3DataNodeId_B5Wjb"
+      },
+      "input": {
+        "ref": "S3DataNodeId_qU2Oi"
+      },
+      "schedule": {
+        "ref": "DefaultSchedule"
+      },
+      "name": "MyHiveActivity",
+      "hiveScript": "INSERT OVERWRITE TABLE ${output1} select ArrivalDtUTC, CaptureDtUtc, NormalizedLatitude, NormalizedLongitude, AnalyticsSpeed, AnalyticsSpeedMetric, NormalizedHeading from ${input1};",
+      "id": "HiveActivityId_fDpqz",
+      "runsOn": {
+        "ref": "EmrClusterId_uoy6t"
+      },
+      "type": "HiveActivity"
+    },
+    {
+      "name": "MyOutputDataType",
+      "column": [
+        "ArrivalDtUTC TIMESTAMP",
+        "CaptureDtUtc TIMESTAMP",
+        "NormalizedLatitude FLOAT",
+        "NormalizedLongitude FLOAT",
+        "AnalyticsSpeed INT",
+        "AnalyticsSpeedMetric STRING",
+        "NormalizedHeading INT"
+      ],
+      "columnSeparator": "\\t",
+      "id": "DataFormatId_iV3vW",
+      "type": "Custom",
+      "recordSeparator": "\\n"
+    },
+    {
+      "name": "MyInputDataType",
+      "column": [
+        "ArrivalDtUTC TIMESTAMP",
+        "CaptureDtUtc TIMESTAMP",
+        "NormalizedLatitude FLOAT",
+        "NormalizedLongitude FLOAT",
+        "AnalyticsSpeed INT",
+        "AnalyticsSpeedMetric STRING",
+        "NormalizedHeading INT"
+      ],
+      "columnSeparator": "\\t",
+      "id": "DataFormatId_E4oC9",
+      "type": "Custom",
+      "recordSeparator": "\\n"
+    },
+    {
+      "failureAndRerunMode": "CASCADE",
+      "schedule": {
+        "ref": "DefaultSchedule"
+      },
+      "resourceRole": "DataPipelineDefaultResourceRole",
+      "role": "DataPipelineDefaultRole",
+      "scheduleType": "cron",
+      "name": "Default",
+      "id": "Default"
+    },
+    {
+      "schedule": {
+        "ref": "DefaultSchedule"
+      },
+      "directoryPath": "s3://inrix-dmt/emr-export",
+      "dataFormat": {
+        "ref": "DataFormatId_iV3vW"
+      },
+      "name": "MyOutputData",
+      "id": "S3DataNodeId_B5Wjb",
+      "type": "S3DataNode"
+    },
+    {
+      "period": "1 days",
+      "startDateTime": "2016-04-17T16:30:00",
+      "name": "Every 1 day",
+      "id": "DefaultSchedule",
+      "endDateTime": "2016-04-19T16:30:00",
+      "type": "Schedule"
+    },
+    {
+      "role": "devops",
+      "actionOnResourceFailure": "retryAll",
+      "maximumRetries": "2",
+      "enableDebugging": "true",
+      "coreInstanceCount": "4",
+      "masterInstanceType": "m3.xlarge",
+      "type": "EmrCluster",
+      "terminateAfter": "10 Hours",
+      "schedule": {
+        "ref": "DefaultSchedule"
+      },
+      "resourceRole": "devops",
+      "actionOnTaskFailure": "continue",
+      "name": "MyEmrResource",
+      "keyPair": "AnalyticsSharedKeyPair",
+      "coreInstanceType": "m3.xlarge",
+      "id": "EmrClusterId_uoy6t",
+      "region": "us-west-2"
+    }
+  ],
+  "parameters": []
+}
